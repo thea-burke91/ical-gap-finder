@@ -1,0 +1,18 @@
+{
+  "name": "ical-gap-finder",
+  "version": "0.1.0",
+  "description": "Find free time gaps in an .ics calendar file",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "ical-gap-finder": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
