@@ -55,19 +55,23 @@ No dependencies, so there's nothing to install first.
 
 ## Current limitations
 
-- No `RRULE` support yet -- recurring events are read as a single
-  occurrence at their `DTSTART`/`DTEND`.
+- `RRULE` recurrence is expanded for `FREQ=DAILY/WEEKLY/MONTHLY/YEARLY`
+  with `INTERVAL`, `COUNT`, `UNTIL`, and `BYDAY` (weekly only). Anything
+  else in the rule -- `BYMONTHDAY`, `BYSETPOS`, `RDATE`/`EXDATE`, ordinal
+  `BYDAY` like `1MO` -- falls back to a single occurrence at the event's
+  own `DTSTART`/`DTEND`.
 - No timezone database. `DTSTART;TZID=...` values are read as if they
   were UTC. Anything with a trailing `Z`, or already in UTC, is exact.
 - `VALARM`, `VTIMEZONE`, and other non-`VEVENT` blocks are ignored.
 
 ## Design
 
-`src/ics.ts` and `src/gaps.ts` export only pure functions: given the same
-input they always return the same output, with no file or clock access.
-`src/cli.ts` is the only file that touches `process.argv` or the
-filesystem, and it's a thin wrapper around the two. That split is what
-makes the parsing and gap math straightforward to unit test later.
+`src/ics.ts`, `src/rrule.ts`, and `src/gaps.ts` export only pure
+functions: given the same input they always return the same output, with
+no file or clock access. `src/cli.ts` is the only file that touches
+`process.argv` or the filesystem, and it's a thin wrapper around the
+other three. That split is what makes the parsing and gap math
+straightforward to unit test later.
 
 ## License
 

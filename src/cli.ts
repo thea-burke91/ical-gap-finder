@@ -4,6 +4,7 @@
 
 import { readFileSync } from "node:fs";
 import { parseIcs } from "./ics.js";
+import { expandEvents } from "./rrule.js";
 import { computeBusyIntervals, findFreeGaps, formatDuration } from "./gaps.js";
 
 interface Args {
@@ -58,7 +59,8 @@ function main(): void {
 
   const text = readFileSync(args.filePath, "utf8");
   const events = parseIcs(text);
-  const busy = computeBusyIntervals(events);
+  const occurrences = expandEvents(events, args.windowStart, args.windowEnd);
+  const busy = computeBusyIntervals(occurrences);
   const gaps = findFreeGaps(busy, args.windowStart, args.windowEnd, args.minGapMinutes * 60000);
 
   if (gaps.length === 0) {

@@ -1,5 +1,6 @@
 // Minimal RFC 5545 parsing: just enough to pull VEVENT start/end times out
-// of a calendar file. No RRULE expansion yet, no VALARM/VTIMEZONE handling.
+// of a calendar file. RRULE expansion lives in rrule.ts; this file only
+// carries the raw rule string through. No VALARM/VTIMEZONE handling.
 
 export interface CalendarEvent {
   uid: string;
@@ -9,6 +10,8 @@ export interface CalendarEvent {
   /** milliseconds since epoch */
   end: number;
   allDay: boolean;
+  /** raw RRULE property value, or null if the event doesn't recur */
+  rrule: string | null;
 }
 
 interface RawProperty {
@@ -88,6 +91,7 @@ export function parseIcs(text: string): CalendarEvent[] {
   let start: number | null = null;
   let end: number | null = null;
   let allDay = false;
+  let rrule: string | null = null;
 
   for (const line of lines) {
     if (line === "BEGIN:VEVENT") {
@@ -97,12 +101,13 @@ export function parseIcs(text: string): CalendarEvent[] {
       start = null;
       end = null;
       allDay = false;
+      rrule = null;
       continue;
     }
     if (line === "END:VEVENT") {
       if (inEvent && start !== null) {
         const resolvedEnd = end !== null ? end : allDay ? start + ONE_DAY_MS : start;
-        events.push({ uid, summary, start, end: resolvedEnd, allDay });
+        events.push({ uid, summary, start, end: resolvedEnd, allDay, rrule });
       }
       inEvent = false;
       continue;
@@ -128,6 +133,9 @@ export function parseIcs(text: string): CalendarEvent[] {
         end = parsed.epochMs;
         break;
       }
+      case "RRULE":
+        rrule = prop.value;
+        break;
       default:
         break;
     }
