@@ -53,6 +53,15 @@ node dist/cli.js tuesday.ics 2026-09-22T09:00:00Z 2026-09-22T17:00:00Z
 
 No dependencies, so there's nothing to install first.
 
+## Testing
+
+```
+npm test
+```
+
+Compiles with `tsc` and runs the `*.test.ts` files next to each module
+with Node's built-in test runner. No test framework dependency either.
+
 ## Current limitations
 
 - `RRULE` recurrence is expanded for `FREQ=DAILY/WEEKLY/MONTHLY/YEARLY`
@@ -70,8 +79,9 @@ No dependencies, so there's nothing to install first.
 functions: given the same input they always return the same output, with
 no file or clock access. `src/cli.ts` is the only file that touches
 `process.argv` or the filesystem, and it's a thin wrapper around the
-other three. That split is what makes the parsing and gap math
-straightforward to unit test later.
+other three. That split is what makes those three modules
+straightforward to unit test, which is what the `*.test.ts` files next
+to them do.
 
 ## License
 
